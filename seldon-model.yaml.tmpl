@@ -1,0 +1,32 @@
+apiVersion: machinelearning.seldon.io/v1
+kind: SeldonDeployment
+metadata:
+  name: seldon
+spec:
+  annotations:
+    seldon.io/engine-separate-pod: "true"
+  predictors:
+  - componentSpecs:
+    - spec:
+        containers:
+        - image: image-registry.openshift-image-registry.svc:5000/__USER__-__ENV__/_IMAGE_NAME_:_GIT_REV_   
+          imagePullPolicy: Always
+          name: classifier-1
+          livenessProbe:            
+            httpGet:
+              path: /health/status
+              port: http
+              scheme: HTTP
+          readinessProbe:
+            httpGet:
+              path: /health/status
+              port: http
+              scheme: HTTP
+    graph:
+      endpoint:
+        type: REST
+      name: classifier-1
+      type: MODEL
+    name: pred1
+    annotations:
+      predictor_version: v1
