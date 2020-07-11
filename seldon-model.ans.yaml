@@ -1,0 +1,32 @@
+apiVersion: machinelearning.seldon.io/v1
+kind: SeldonDeployment
+metadata:
+  name: seldon
+spec:
+  annotations:
+    seldon.io/engine-separate-pod: "true"
+  predictors:
+  - componentSpecs:
+    - spec:
+        containers:
+        - image: quay.io/ltsai/rh-mlops-workshop-model:lr
+          imagePullPolicy: Always
+          name: classifier-1
+          livenessProbe:            
+            httpGet:
+              path: /health/status
+              port: http
+              scheme: HTTP
+          readinessProbe:
+            httpGet:
+              path: /health/status
+              port: http
+              scheme: HTTP
+    graph:
+      endpoint:
+        type: REST
+      name: classifier-1
+      type: MODEL
+    name: pred1
+    annotations:
+      predictor_version: v1
